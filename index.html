@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Examination Cell — Seating &amp; Invigilation System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="C:\Users\ELCOT\OneDrive\Desktop\exam cell\style.css">
+</head>
+<body>
+
+<!-- ===================== TOAST CONTAINER ===================== -->
+<div id="toastContainer" class="toast-container"></div>
+
+<!-- ===================== CONFIRM DIALOG ===================== -->
+<div id="confirmOverlay" class="overlay hidden">
+  <div class="confirm-box">
+    <div class="confirm-icon">⚠</div>
+    <h3 id="confirmTitle">Are you sure?</h3>
+    <p id="confirmMessage">This action cannot be undone.</p>
+    <div class="confirm-actions">
+      <button class="btn btn-ghost" id="confirmCancel">Cancel</button>
+      <button class="btn btn-danger" id="confirmOk">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== LOGIN SCREEN ===================== -->
+<section id="loginScreen" class="login-screen">
+  <div class="login-panel">
+    <div class="login-brand">
+      <div class="brand-seal">EC</div>
+      <h1>Examination Cell</h1>
+      <p class="brand-sub">Seating &amp; Invigilation Management</p>
+    </div>
+    <form id="loginForm" class="login-form" autocomplete="off">
+      <label class="field">
+        <span>Username</span>
+        <input type="text" id="loginUsername" placeholder="admin" required>
+      </label>
+      <label class="field">
+        <span>Password</span>
+        <input type="password" id="loginPassword" placeholder="••••••••" required>
+      </label>
+      <p id="loginError" class="login-error hidden">Incorrect username or password.</p>
+      <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+      <p class="login-hint">Default credentials — admin / admin123</p>
+    </form>
+  </div>
+  <div class="login-side" aria-hidden="true">
+    <div class="ledger-mock">
+      <div class="ledger-row ledger-head"><span>BENCH</span><span>LEFT SEAT</span><span>RIGHT SEAT</span></div>
+      <div class="ledger-row"><span>01</span><span>CSE-014</span><span>ECE-041</span></div>
+      <div class="ledger-row"><span>02</span><span>CSE-015</span><span>ECE-040</span></div>
+      <div class="ledger-row"><span>03</span><span>CSE-016</span><span>ECE-039</span></div>
+      <div class="ledger-row"><span>04</span><span>CSE-017</span><span>ECE-038</span></div>
+      <div class="ledger-row"><span>05</span><span>CSE-018</span><span>ECE-037</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== APP SHELL ===================== -->
+<div id="appShell" class="app-shell hidden">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-seal small">EC</div>
+      <span class="sidebar-brand-text">Exam Cell</span>
+    </div>
+    <nav class="side-nav">
+      <button class="nav-item active" data-view="dashboard"><i data-icon="grid"></i><span>Dashboard</span></button>
+      <button class="nav-item" data-view="students"><i data-icon="users"></i><span>Student Management</span></button>
+      <button class="nav-item" data-view="departments"><i data-icon="layers"></i><span>Department Management</span></button>
+      <button class="nav-item" data-view="halls"><i data-icon="home"></i><span>Hall Management</span></button>
+      <button class="nav-item" data-view="invigilators"><i data-icon="shield"></i><span>Invigilator Management</span></button>
+      <button class="nav-item" data-view="seating"><i data-icon="grid-2"></i><span>Seating Arrangement</span></button>
+      <button class="nav-item" data-view="reports"><i data-icon="doc"></i><span>Reports</span></button>
+      <button class="nav-item" data-view="settings"><i data-icon="gear"></i><span>Settings</span></button>
+    </nav>
+    <button class="nav-item logout-btn" id="logoutBtn"><i data-icon="exit"></i><span>Logout</span></button>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-col">
+    <header class="topbar">
+      <button id="sidebarToggle" class="icon-btn only-mobile" aria-label="Toggle menu">☰</button>
+      <div class="breadcrumb" id="breadcrumb">Dashboard</div>
+      <div class="topbar-right">
+        <div class="search-box">
+          <input type="text" id="globalSearch" placeholder="Search students, halls, faculty, reg. no...">
+        </div>
+        <button class="icon-btn" id="themeToggle" title="Toggle theme">◐</button>
+        <div class="admin-chip">👤 <span id="adminNameChip">Admin</span></div>
+      </div>
+    </header>
+
+    <main class="content" id="content">
+
+      <!-- ============ DASHBOARD ============ -->
+      <section class="view active" id="view-dashboard">
+        <div class="view-head">
+          <h2>Dashboard</h2>
+          <p class="muted">Overview of today's examination cell activity.</p>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-icon">🎓</div><div><div class="stat-num" data-counter="totalStudents">0</div><div class="stat-label">Total Students</div></div></div>
+          <div class="stat-card"><div class="stat-icon">🏛</div><div><div class="stat-num" data-counter="totalDepartments">0</div><div class="stat-label">Total Departments</div></div></div>
+          <div class="stat-card"><div class="stat-icon">🚪</div><div><div class="stat-num" data-counter="totalHalls">0</div><div class="stat-label">Examination Halls</div></div></div>
+          <div class="stat-card"><div class="stat-icon">🛡</div><div><div class="stat-num" data-counter="totalInvigilators">0</div><div class="stat-label">Invigilators</div></div></div>
+          <div class="stat-card"><div class="stat-icon">📅</div><div><div class="stat-num" data-counter="todaysExams">0</div><div class="stat-label">Today's Exams</div></div></div>
+          <div class="stat-card"><div class="stat-icon">🪑</div><div><div class="stat-num" data-counter="seatingPlans">0</div><div class="stat-label">Seating Plans Generated</div></div></div>
+        </div>
+        <div class="dash-grid">
+          <div class="panel">
+            <div class="panel-head"><h3>Department-wise Strength</h3></div>
+            <canvas id="deptChart" width="480" height="240"></canvas>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>Hall Utilization</h3></div>
+            <canvas id="hallChart" width="480" height="240"></canvas>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Recent Seating Plans</h3></div>
+          <div class="table-wrap"><table class="data-table" id="recentPlansTable"><thead><tr><th>Date</th><th>Session</th><th>Hall</th><th>Departments</th><th>Students Seated</th></tr></thead><tbody></tbody></table></div>
+        </div>
+      </section>
+
+      <!-- ============ STUDENTS ============ -->
+      <section class="view" id="view-students">
+        <div class="view-head with-actions">
+          <div><h2>Student Management</h2><p class="muted">Manage examination roll of all students.</p></div>
+          <div class="head-actions">
+            <button class="btn btn-ghost" id="importStudentsBtn">⇪ Import Excel</button>
+            <button class="btn btn-primary" id="addStudentBtn">+ Add Student</button>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="toolbar">
+            <input type="text" class="input" id="studentSearch" placeholder="Search by name or register number...">
+            <select class="input select" id="studentDeptFilter"><option value="">All Departments</option></select>
+            <select class="input select" id="studentYearFilter">
+              <option value="">All Years</option><option>1</option><option>2</option><option>3</option><option>4</option>
+            </select>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table" id="studentsTable">
+              <thead><tr><th>Reg. No</th><th>Name</th><th>Department</th><th>Year</th><th>Sem</th><th>Section</th><th>Gender</th><th>Actions</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="pagination" id="studentsPagination"></div>
+        </div>
+      </section>
+
+      <!-- ============ DEPARTMENTS ============ -->
+      <section class="view" id="view-departments">
+        <div class="view-head with-actions">
+          <div><h2>Department Management</h2><p class="muted">Academic departments recognised by the exam cell.</p></div>
+          <button class="btn btn-primary" id="addDeptBtn">+ Add Department</button>
+        </div>
+        <div class="panel">
+          <div class="table-wrap">
+            <table class="data-table" id="deptTable">
+              <thead><tr><th>Code</th><th>Name</th><th>Students</th><th>Actions</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ HALLS ============ -->
+      <section class="view" id="view-halls">
+        <div class="view-head with-actions">
+          <div><h2>Hall Management</h2><p class="muted">Examination halls and seating capacity.</p></div>
+          <button class="btn btn-primary" id="addHallBtn">+ Add Hall</button>
+        </div>
+        <div class="panel">
+          <div class="table-wrap">
+            <table class="data-table" id="hallsTable">
+              <thead><tr><th>Hall No.</th><th>Building</th><th>Floor</th><th>Benches</th><th>Seats/Bench</th><th>Capacity</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ INVIGILATORS ============ -->
+      <section class="view" id="view-invigilators">
+        <div class="view-head with-actions">
+          <div><h2>Invigilator Management</h2><p class="muted">Faculty available for examination duty.</p></div>
+          <button class="btn btn-primary" id="addInvigilatorBtn">+ Add Invigilator</button>
+        </div>
+        <div class="panel">
+          <div class="toolbar">
+            <input type="text" class="input" id="invigilatorSearch" placeholder="Search by name or faculty ID...">
+            <select class="input select" id="invigilatorDeptFilter"><option value="">All Departments</option></select>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table" id="invigilatorsTable">
+              <thead><tr><th>Faculty ID</th><th>Name</th><th>Department</th><th>Designation</th><th>Mobile</th><th>Actions</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ SEATING ARRANGEMENT ============ -->
+      <section class="view" id="view-seating">
+        <div class="view-head">
+          <h2>Seating Arrangement</h2>
+          <p class="muted">Combine two departments and generate an intelligent bench-wise seating plan.</p>
+        </div>
+        <div class="panel">
+          <div class="seating-form">
+            <label class="field"><span>Department 1</span><select class="input select" id="seatDept1"></select></label>
+            <label class="field"><span>Department 2</span><select class="input select" id="seatDept2"></select></label>
+            <label class="field"><span>Exam Date</span><input type="date" class="input" id="seatDate"></label>
+            <label class="field"><span>Session</span>
+              <select class="input select" id="seatSession"><option>Forenoon</option><option>Afternoon</option></select>
+            </label>
+            <label class="field"><span>Hall</span><select class="input select" id="seatHall"></select></label>
+            <label class="field"><span>Algorithm</span>
+              <select class="input select" id="seatAlgo">
+                <option value="forward-reverse">Forward / Reverse Alternate Bench</option>
+              </select>
+            </label>
+            <button class="btn btn-primary btn-generate" id="generateSeatingBtn">⚙ Generate Seating</button>
+          </div>
+        </div>
+
+        <div class="panel hidden" id="seatingResultPanel">
+          <div class="panel-head with-actions">
+            <h3>Generated Seating Chart</h3>
+            <div class="head-actions">
+              <button class="btn btn-ghost" id="assignInvigilatorBtn">Assign Invigilator</button>
+              <button class="btn btn-primary" id="printSeatingBtn">🖶 Print Chart</button>
+            </div>
+          </div>
+          <div id="seatingChartArea"></div>
+        </div>
+      </section>
+
+      <!-- ============ REPORTS ============ -->
+      <section class="view" id="view-reports">
+        <div class="view-head">
+          <h2>Reports</h2>
+          <p class="muted">Generate printable reports for records and audits.</p>
+        </div>
+        <div class="report-grid">
+          <div class="report-card" data-report="hallwise"><div class="report-icon">🚪</div><h4>Hall-wise Seating</h4><p>Every seating plan grouped by examination hall.</p></div>
+          <div class="report-card" data-report="deptwise"><div class="report-icon">🏛</div><h4>Department-wise Seating</h4><p>Seating allocation grouped by department.</p></div>
+          <div class="report-card" data-report="studentlist"><div class="report-icon">🎓</div><h4>Student Seating List</h4><p>Flat list of every seated student with location.</p></div>
+          <div class="report-card" data-report="duty"><div class="report-icon">🛡</div><h4>Invigilator Duty Report</h4><p>Duty roster for all assigned invigilators.</p></div>
+        </div>
+        <div class="panel hidden" id="reportResultPanel">
+          <div class="panel-head with-actions">
+            <h3 id="reportResultTitle">Report</h3>
+            <button class="btn btn-primary" id="printReportBtn">🖶 Print Report</button>
+          </div>
+          <div id="reportResultArea"></div>
+        </div>
+      </section>
+
+      <!-- ============ SETTINGS ============ -->
+      <section class="view" id="view-settings">
+        <div class="view-head">
+          <h2>Settings</h2>
+          <p class="muted">Configure institution details and preferences.</p>
+        </div>
+        <div class="settings-grid">
+          <div class="panel">
+            <div class="panel-head"><h3>Institution</h3></div>
+            <form id="settingsForm" class="settings-form">
+              <label class="field"><span>College Name</span><input class="input" id="setCollegeName" type="text"></label>
+              <label class="field"><span>Exam Name</span><input class="input" id="setExamName" type="text"></label>
+              <label class="field"><span>Academic Year</span><input class="input" id="setAcademicYear" type="text"></label>
+              <label class="field"><span>Semester</span><input class="input" id="setSemester" type="text"></label>
+              <label class="field"><span>Default Session</span>
+                <select class="input select" id="setSession"><option>Forenoon</option><option>Afternoon</option></select>
+              </label>
+              <button type="submit" class="btn btn-primary">Save Settings</button>
+            </form>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>Security</h3></div>
+            <form id="passwordForm" class="settings-form">
+              <label class="field"><span>Current Password</span><input class="input" type="password" id="curPassword"></label>
+              <label class="field"><span>New Password</span><input class="input" type="password" id="newPassword"></label>
+              <button type="submit" class="btn btn-primary">Change Password</button>
+            </form>
+            <div class="panel-head" style="margin-top:24px"><h3>Appearance</h3></div>
+            <div class="theme-row">
+              <button class="btn btn-ghost theme-choice" data-theme="light">☀ Light Mode</button>
+              <button class="btn btn-ghost theme-choice" data-theme="dark">☾ Dark Mode</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ===================== MODAL (generic form modal) ===================== -->
+<div class="overlay hidden" id="modalOverlay">
+  <div class="modal" id="modalBox">
+    <div class="modal-head">
+      <h3 id="modalTitle">Title</h3>
+      <button class="icon-btn" id="modalClose">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script src="C:\Users\ELCOT\OneDrive\Desktop\exam cell\script.js"></script>
+</body>
+</html>
